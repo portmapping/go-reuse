@@ -1,4 +1,4 @@
-module github.com/PortMapping/go-reuse
+module github.com/portmapping/go-reuse
 
 go 1.14
 
