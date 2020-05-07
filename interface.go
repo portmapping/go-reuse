@@ -40,6 +40,54 @@ func Listen(network, address string) (net.Listener, error) {
 	return listenConfig.Listen(context.Background(), network, address)
 }
 
+// ListenTCP listens at the given network and address. see net.Listen
+// Returns a net.Listener created from a file discriptor for a socket
+// with SO_REUSEPORT and SO_REUSEADDR option set.
+func ListenTCP(network string, laddr *net.TCPAddr) (*net.TCPListener, error) {
+	t, err := net.ListenTCP(network, laddr)
+	if err != nil {
+		return nil, err
+	}
+	conn, err := t.SyscallConn()
+	if err != nil {
+		return nil, err
+	}
+	err = Control(network, "", conn)
+	return t, err
+}
+
+// ListenIP listens at the given network and address. see net.Listen
+// Returns a net.Listener created from a file discriptor for a socket
+// with SO_REUSEPORT and SO_REUSEADDR option set.
+func ListenIP(network string, laddr *net.IPAddr) (*net.IPConn, error) {
+	i, err := net.ListenIP(network, laddr)
+	if err != nil {
+		return nil, err
+	}
+	conn, err := i.SyscallConn()
+	if err != nil {
+		return nil, err
+	}
+	err = Control(network, "", conn)
+	return i, err
+}
+
+// ListenUnix listens at the given network and address. see net.Listen
+// Returns a net.Listener created from a file discriptor for a socket
+// with SO_REUSEPORT and SO_REUSEADDR option set.
+func ListenUnix(network string, laddr *net.UnixAddr) (*net.UnixListener, error) {
+	u, err := net.ListenUnix(network, laddr)
+	if err != nil {
+		return nil, err
+	}
+	conn, err := u.SyscallConn()
+	if err != nil {
+		return nil, err
+	}
+	err = Control(network, "", conn)
+	return u, err
+}
+
 // ListenPacket listens at the given network and address. see net.ListenPacket
 // Returns a net.Listener created from a file discriptor for a socket
 // with SO_REUSEPORT and SO_REUSEADDR option set.
