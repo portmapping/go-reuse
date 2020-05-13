@@ -19,6 +19,7 @@ package reuse
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"time"
@@ -38,6 +39,14 @@ var (
 // with SO_REUSEPORT and SO_REUSEADDR option set.
 func Listen(network, address string) (net.Listener, error) {
 	return listenConfig.Listen(context.Background(), network, address)
+}
+
+func ListenTLS(network, address string, config *tls.Config) (net.Listener, error) {
+	listen, err := listenConfig.Listen(context.Background(), network, address)
+	if err != nil {
+		return nil, err
+	}
+	return tls.NewListener(listen, config), nil
 }
 
 // ListenTCP listens at the given network and address. see net.Listen
@@ -126,6 +135,18 @@ func Dial(network, laddr, raddr string) (net.Conn, error) {
 		LocalAddr: nla,
 	}
 	return d.Dial(network, raddr)
+}
+
+func DialTLS(network, laddr, raddr string, config *tls.Config) (net.Conn, error) {
+	nla, err := ResolveAddr(network, laddr)
+	if err != nil {
+		return nil, fmt.Errorf("resolving local addr: %w", err)
+	}
+	d := net.Dialer{
+		Control:   Control,
+		LocalAddr: nla,
+	}
+	return tls.DialWithDialer(&d, network, raddr, config)
 }
 
 // DialTCP dials the given network and tcp address. see net.Dialer.Dial
