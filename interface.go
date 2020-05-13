@@ -41,6 +41,9 @@ func Listen(network, address string) (net.Listener, error) {
 	return listenConfig.Listen(context.Background(), network, address)
 }
 
+// ListenTLS listens at the given network and address. see net.Listen
+// Returns a net.Listener created from a file discriptor for a socket
+// with SO_REUSEPORT and SO_REUSEADDR option set.
 func ListenTLS(network, address string, config *tls.Config) (net.Listener, error) {
 	listen, err := listenConfig.Listen(context.Background(), network, address)
 	if err != nil {
@@ -137,6 +140,9 @@ func Dial(network, laddr, raddr string) (net.Conn, error) {
 	return d.Dial(network, raddr)
 }
 
+// DialTLS dials the given network and address. see net.Dialer.Dial
+// Returns a net.Conn created from a file discriptor for a socket
+// with SO_REUSEPORT and SO_REUSEADDR option set.
 func DialTLS(network, laddr, raddr string, config *tls.Config) (net.Conn, error) {
 	nla, err := ResolveAddr(network, laddr)
 	if err != nil {
