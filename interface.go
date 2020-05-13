@@ -199,6 +199,18 @@ func DialUDP(network string, laddr *net.UDPAddr, raddr *net.UDPAddr) (net.Conn, 
 	return d.Dial(network, raddr.String())
 }
 
+// DialTimeoutUDP dials the given network and udp address. see net.Dialer.Dial
+// Returns a net.Conn created from a file discriptor for a socket
+// with SO_REUSEPORT and SO_REUSEADDR option set.
+func DialTimeoutUDP(network string, laddr *net.UDPAddr, raddr *net.UDPAddr, timeout time.Duration) (net.Conn, error) {
+	d := net.Dialer{
+		Control:   Control,
+		LocalAddr: laddr,
+		Timeout:   timeout,
+	}
+	return d.Dial(network, raddr.String())
+}
+
 // DialUnix dials the given network and unix address. see net.Dialer.Dial
 // Returns a net.Conn created from a file discriptor for a socket
 // with SO_REUSEPORT and SO_REUSEADDR option set.
